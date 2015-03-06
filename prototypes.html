@@ -1,0 +1,94 @@
+      <!-- Navigation -->
+      <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html">Things admin backend</a>
+        </div>
+        <!-- /.navbar-header -->
+
+
+        <div class="navbar-default sidebar" role="navigation">
+          <div class="sidebar-nav navbar-collapse">
+            <ul class="nav" id="side-menu">
+              <li>
+                <a class="active" href="index.html"><i class="fa fa-dashboard fa-fw"></i> Prototype creator</a>
+
+                <a href="#/things/"><i class="fa fa-dashboard fa-fw"></i> Things manager</a>
+<!--
+                <a href="clientBackend/"><i class="fa fa-dashboard fa-fw"></i> Client backend</a>
+-->
+              </li>
+            </ul>
+          </div>
+          <!-- /.sidebar-collapse -->
+        </div>
+        <!-- /.navbar-static-side -->
+      </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Prototype creator</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+            <h2>Define prototypes</h2>
+            
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    Prototypes
+                  </div>
+                  <div class="panel-body">
+                    <div class="list-body">
+                      <div class="list-group-item" ng-repeat="prototype in prototypes track by prototype.id">
+                        <div class="row">
+                          <div class="col-sm-12 col-md-6 col-lg-6">
+                            <p><b>{{prototype.name}}</b> ({{prototype.id}}) <a href="#/edit/prototype/{{prototype.id}}">Edit <span class="glyphicon glyphicon-pencil"></span></a></p>
+                            <ul>
+                              <li ng-if="prototype.options.singleton">Singleton</li>
+                              <li ng-if="prototype.options.singleton && prototype.options.sidebar">Sidebar</li>
+                            </ul>
+                          </div>
+                          <div class="col-sm-12 col-md-6 col-lg-6">
+                            <p><i>Fields</i></p>
+                            <ul sortable ng-model="prototype.fields">
+                              <li ng-repeat="field in prototype.fields track by field.id">
+                                {{field.name}}, {{field.type}}<span ng-if="field.array">, array</span> - <a href="#/edit/field/{{prototype.id}}/{{field.id}}">Edit <span class="glyphicon glyphicon-pencil"></span></a>
+                              </li>
+                              <li><a href="#/new/field/{{prototype.id}}">Add field <span class="glyphicon glyphicon-plus"></span></a></li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <p><a href="#/new/prototype" class="btn btn-default btn-xs">Add new prototype <span class="glyphicon glyphicon-plus"></span></a></p>
+
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" ng-model="showDebug" /> Show debug information
+                  </label>
+                </div>
+                <div ng-if="showDebug">
+                  <pre>
+                    {{prototypes | json}}
+                  </pre>
+                </div>
+              </div>
+            </div>
+
+
+        </div>
+        <!-- /#page-wrapper -->
+

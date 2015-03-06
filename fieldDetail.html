@@ -1,0 +1,98 @@
+      <!-- Navigation -->
+      <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html">Things admin backend</a>
+        </div>
+        <!-- /.navbar-header -->
+
+
+        <div class="navbar-default sidebar" role="navigation">
+          <div class="sidebar-nav navbar-collapse">
+            <ul class="nav" id="side-menu">
+              <li>
+                <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Prototype creator</a>
+
+                <a class="active" href="#/things/"><i class="fa fa-dashboard fa-fw"></i> Things manager</a>
+<!--
+                <a href="clientBackend/"><i class="fa fa-dashboard fa-fw"></i> Client backend</a>
+-->
+              </li>
+            </ul>
+          </div>
+          <!-- /.sidebar-collapse -->
+        </div>
+        <!-- /.navbar-static-side -->
+      </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Prototype creator</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  Edit field
+                </div>
+                <div class="panel-body">
+                  <form name="myForm">
+                    <div class="control-group form-group" ng-class="{error: myForm.name.$invalid && !myForm.name.$pristine}">
+                      <label for="name">Name</label>
+                      <input type="text" name="name" class="form-control" ng-model="field.name" required>
+                      <span ng-show="myForm.name.$error.required && !myForm.name.$pristine" class="help-inline">
+                          Required {{myForm.name.$pristine}}</span>
+                    </div>
+                
+                    <div class="control-group form-group" ng-class="{error: myForm.type.$invalid && !myForm.type.$pristine}">
+                      <label for="type">Type</label>
+                      <select name="type" ng-model="field.type" class="form-control" required>
+                        <option value="SHORT">short text</option>
+                        <option value="TEXT">long text</option>
+                        <option value="IMAGE">image</option>
+                        <option value="FILE">file</option>
+                        <option value="THING">thing</option>
+                        <option value="MIRROR">mirror field</option>
+                      </select>
+                    </div>
+                
+                    <div ng-if="field.type == 'THING'" class="control-group form-group">
+                      <label for="prototype">Thing</label>
+                      <select ng-model="field.options.prototype" name="prototype" ng-options="child.name for child in otherThings track by child.id" required></select>
+                    </div>
+          
+                    <div class="control-group form-group">
+                      <label for="name">Help text</label>
+                      <input type="text" name="helpText" class="form-control" ng-model="field.helpText">
+                    </div>
+          
+                    <div ng-if="field.type !== 'MIRROR'" class="control-group form-group" ng-class="{error: myForm.array.$invalid && !myForm.array.$pristine}">
+                      <label for="type">Array</label>
+                      <input type="checkbox" name="array" ng-model="field.array">
+                    </div>
+          
+                    <button ng-click="save(false)" ng-disabled="myForm.$invalid"
+                            class="btn btn-primary">Save</button>
+                    <a href="#/" class="btn btn-default">Cancel</a>
+                    <span class="pull-right">
+                      <button ng-click="destroy()" class="btn btn-danger">Delete</button>
+                    </span>
+                  
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- /#page-wrapper -->
