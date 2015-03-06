@@ -148,15 +148,17 @@
                             <div ng-switch-when="FILE">
                               <input type="file" ng-model="field.value" name="value" />
                             </div>
-                            <div ng-switch-when="THING">
-                              <div ng-if="field.value !== null" ng-init="itemThing = getThing(field.value.id, things)">
-                                <div class="list-group-item">
-                                  {{itemThing.name}} <span class="pull-right"><a href="{{ getEditPath(itemThing.id) }}">Edit</a></span>
+                            <div ng-switch-when="THING" ng-init="setupThingField(field)">
+                              <div class="well">
+                                <div ng-if="field.value !== null" ng-init="itemThing = getThing(field.value.id, things)">
+                                  <div class="list-group-item">
+                                    {{itemThing.name}} <span class="pull-right"><a href="{{ getEditPath(itemThing.id) }}">Edit</a></span>
+                                  </div>
                                 </div>
+                                <br />
+                                <label for="thingValue">Select thing</label>
+                                  <select ng-model="field.value" name="value" ng-init="values.new = field.thingFieldOptions[0]" ng-options="itemThing.name for itemThing in field.thingFieldOptions track by itemThing.id"></select>
                               </div>
-                              <br />
-                              <label for="thingValue">Select thing</label>
-                              <select ng-model="field.value" name="thingValue" ng-options="itemThing.name for itemThing in otherThings track by itemThing.id"></select>
                             </div>
                             <div ng-switch-when="MIRROR" ng-init="mirrorField = getMirrorDetails(field)">
                               <p>This is a mirror field, it just copies what is in the '{{mirrorField.name}}' field from the {{mirrorField.thing.name}}</p>

@@ -65,11 +65,11 @@
                         <input type="checkbox" name="sidebar" ng-model="prototype.options.sidebar" />
                       </div>
             
-                      <button ng-click="save(false)" ng-disabled="myForm.$invalid"
+                      <button ng-click="save( prototype )" ng-disabled="myForm.$invalid"
                               class="btn btn-primary">Save</button>
                       <a href="#/" class="btn btn-default">Cancel</a>
                       <span class="pull-right">
-                        <button ng-click="destroy()" class="btn btn-danger">Delete</button>
+                        <button ng-click="destroy( prototype )" class="btn btn-danger">Delete</button>
                       </span>
             
                     </form>

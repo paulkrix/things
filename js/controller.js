@@ -153,42 +153,24 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
 
 })
 
-.controller('EditPrototype', function($scope, $http, $location, $routeParams, MCData) {
+.controller('EditPrototype', function($scope, $http, $location, $routeParams, MCData, PrototypeManager) {
   MCData.getData('prototype').then(function(_data) {
-    $scope.prototypes = _data.prototypes;
-    var prototypes = $.grep($scope.prototypes, function(v,i) {
-      return parseInt(v.id) === parseInt($routeParams.prototypeId);
-    });
-    $scope.prototype = prototypes[0];
+    PrototypeManager.prototypes = _data.prototypes;
+    $scope.prototypes = PrototypeManager.prototypes;
+    PrototypeManager.getCurrentPrototype( $routeParams.prototypeId, $scope.prototypes );
+    $scope.prototype = PrototypeManager.prototype;
+
   });
 
-  $scope.save = function() {
-    $scope.prototypes.push($scope.prototype);
-
-    MCData.save($scope.prototype, 'prototype', function(data) {
-      if(data.status === "error") {
-        console.log(data.error);
-        return;
-      }
-      $location.path('/');
-    });
-  }
-
-  $scope.destroy = function() {
-    MCData.destroy($scope.prototype, 'prototype', function(data) {
-      if(data.status === "error") {
-        console.log(data.error);
-        return;
-      }
-      $location.path('/');
-    });
-  }
+  $scope.save = PrototypeManager.save;
+  $scope.destroy = PrototypeManager.destroy;
 
 })
 
-.controller('CreatePrototype', function($scope, $http, $location, MCData) {
+.controller('CreatePrototype', function($scope, $http, $location, MCData, PrototypeManager) {
   MCData.getData('prototype').then(function(_data) {
-    $scope.prototypes = _data.prototypes;
+    PrototypeManager.prototypes = _data.prototypes;
+    $scope.prototypes = PrototypeManager.prototypes;
   });
 
   $scope.prototype = {
@@ -198,89 +180,37 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
     options: {}
   }
 
-  $scope.save = function() {
-    $scope.prototypes.push($scope.prototype);
+  $scope.save = PrototypeManager.save;
 
-    MCData.save($scope.prototype, 'prototype', function(data) {
-      if(data.status === "error") {
-        console.log(data.error);
-        return;
-      }
-      $scope.prototype.id = data.prototypeId;
-      $location.path('/');
-    });
-  }
 })
 
-.controller('EditField', function($scope, $http, $location, $routeParams, MCData) {
+.controller('EditField', function($scope, $http, $location, $routeParams, MCData, PrototypeManager) {
   MCData.getData('prototype').then(function(_data) {
-    $scope.prototypes = _data.prototypes;
-    var prototypes = $.grep($scope.prototypes, function(v,i) {
-      return parseInt(v.id) === parseInt($routeParams.prototypeId);
-    });
-    $scope.prototype = prototypes[0];
-    var fields = $.grep($scope.prototype.fields, function(v,i) {
-      return parseInt(v.id) === parseInt($routeParams.fieldId);
-    });
-    $scope.field = fields[0];
 
-    $scope.otherThings = [];
-    for( var i = 0 ; i < $scope.prototypes.length; i++ ) {
-      if( $scope.prototype.id !== $scope.prototypes[i].id ) {
-        $scope.otherThings.push( { "name": $scope.prototypes[i].name, "id":$scope.prototypes[i].id } );
-      }
-    }
+    PrototypeManager.prototypes = _data.prototypes;
+    $scope.prototypes = PrototypeManager.prototypes;
+    PrototypeManager.getCurrentPrototype( $routeParams.prototypeId, $scope.prototypes );
+    $scope.prototype = PrototypeManager.prototype;
 
+    $scope.field = PrototypeManager.getField( $scope.prototype, $routeParams.fieldId );
+
+    $scope.otherPrototypes = PrototypeManager.getOtherPrototypes( $scope.prototype, $scope.prototypes );
   });
 
-  $scope.save = function() {
-
-    if($scope.field.type === "THING") {
-      delete $scope.field.options.prototype.name;
-    }
-
-    MCData.save($scope.prototype, 'prototype', function(data) {
-      if(data.status === "error") {
-        console.log(data.error);
-        return;
-      }
-      $location.path('/');
-    });
-  }
-
-  $scope.destroy = function() {
-    for(var i = 0; i < $scope.prototype.fields.length; i++) {
-      if($scope.prototype.fields[i].id === $scope.field.id) {
-        $scope.prototype.fields.splice(i, 1);
-        continue;
-      }
-    }
-    MCData.save($scope.prototype, 'prototype', function(data) {
-      if(data.status === "error") {
-        console.log(data.error);
-        return;
-      }
-      $location.path('/');
-    });
-  }
+  $scope.saveField = PrototypeManager.saveField;
+  $scope.destroyField = PrototypeManager.destroyField;
 
 })
 
-.controller('CreateField', function($scope, $http, $location, $routeParams, MCData) {
+.controller('CreateField', function($scope, $http, $location, $routeParams, MCData, PrototypeManager) {
   MCData.getData('prototype').then(function(_data) {
-    $scope.prototypes = _data.prototypes;
 
-    var proto = $.grep($scope.prototypes, function(v,i) {
-      return parseInt(v.id) === parseInt($routeParams.prototypeId);
-    });
-    $scope.prototype = proto[0];
+    PrototypeManager.prototypes = _data.prototypes;
+    $scope.prototypes = PrototypeManager.prototypes;
+    PrototypeManager.getCurrentPrototype( $routeParams.prototypeId, $scope.prototypes );
+    $scope.prototype = PrototypeManager.prototype;
 
-    $scope.otherThings = [];
-    for( var i = 0 ; i < $scope.prototypes.length; i++ ) {
-      if( $scope.prototype.id !== $scope.prototypes[i].id ) {
-        $scope.otherThings.push( { "name": $scope.prototypes[i].name, "id":$scope.prototypes[i].id } );
-      }
-    }
+    $scope.otherPrototypes = PrototypeManager.getOtherPrototypes( $scope.prototype, $scope.prototypes );
 
     $scope.mirrorFields = [];
 
@@ -295,46 +225,15 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
     helpText: ""
   }
 
-  $scope.save = function() {
-
-    $scope.field.id = assignId();
-    $scope.prototype.fields.push($scope.field);
-
-    if($scope.field.type === "THING") {
-      delete $scope.field.options.prototype.name;
-    }
-
-    if($scope.field.type === "MIRROR") {
-      console.log($scope.field);
-      //delete $scope.field.options.prototype.name;
-      //delete $scope.field.options.mirrorField.name;
-    }
-
-    MCData.save($scope.prototype, 'prototype', function(data) {
-      if(data.status === "error") {
-        console.log(data.error);
-        return;
-      }
-      $location.path('/');
-    });
-  }
-
-  function assignId() {
-    var id = 0;
-    for(var i = 0; i < $scope.prototype.fields.length; i++) {
-      if(id <= $scope.prototype.fields[i].id) {
-        id = $scope.prototype.fields[i].id+1;
-      }
-    }
-    return id;
-  }
-
+  $scope.saveField = PrototypeManager.saveField;
+  $scope.destroyField = PrototypeManager.destroyField;
 
 })
 
 .controller('Things', function($scope, $location, $route, MCData, PrototypeManager, ThingManager) {
 
   MCData.getData().then(function(_data) {
+
     ThingManager.things = _data.things;
     $scope.things = ThingManager.things;
 
@@ -379,14 +278,7 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
     });
   }
 
-  $scope.savePrototype = function(prototype) {
-    MCData.save(prototype, "prototype", function(data) {
-      if(data.status === "error") {
-        console.log(data.error);
-        return;
-      }
-    });
-  }
+  $scope.save = PrototypeManager.save;
 
 })
 

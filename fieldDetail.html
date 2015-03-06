@@ -68,7 +68,7 @@
                 
                     <div ng-if="field.type == 'THING'" class="control-group form-group">
                       <label for="prototype">Thing</label>
-                      <select ng-model="field.options.prototype" name="prototype" ng-options="child.name for child in otherThings track by child.id" required></select>
+                      <select ng-model="field.options.prototype" name="prototype" ng-options="child.name for child in otherPrototypes track by child.id" required></select>
                     </div>
           
                     <div class="control-group form-group">
@@ -81,11 +81,11 @@
                       <input type="checkbox" name="array" ng-model="field.array">
                     </div>
           
-                    <button ng-click="save(false)" ng-disabled="myForm.$invalid"
+                    <button ng-click="saveField( field, prototype )" ng-disabled="myForm.$invalid"
                             class="btn btn-primary">Save</button>
                     <a href="#/" class="btn btn-default">Cancel</a>
                     <span class="pull-right">
-                      <button ng-click="destroy()" class="btn btn-danger">Delete</button>
+                      <button ng-click="destroyField( field, prototype )" class="btn btn-danger">Delete</button>
                     </span>
                   
                   </form>
