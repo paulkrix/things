@@ -14,13 +14,12 @@ function ThingManager($location, $upload, MCData) {
     var newThing = jQuery.extend({},prototype);
     newThing.prototype = newThing.id;
     newThing.id = null;
-    newThing.options = {'exposed':false,'deleteable':false};
+    newThing.options = { exposed: prototype.options.exposed };
     for(var i = 0; i < newThing.fields.length; i++) {
       newThing.fields[i].thing = null;
       newThing.fields[i].value = null;
       newThing.fields[i].id = null;
     }
-    // $scope.things.push(newThing);
     MCData.save(newThing, "thing", function(data) {
       if(data.status === "error") {
         console.log(data.error);

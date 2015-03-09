@@ -69,6 +69,28 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
     }
   }
 })
+.filter('exposed', function() {
+  return function(items) {
+    var filteredItems = [];
+    angular.forEach( items, function( item ) {
+      if( item.options.exposed ) {
+        filteredItems.push( item );
+      }
+    });
+    return filteredItems; 
+  }
+})
+.filter('hidden', function() {
+  return function(items) {
+    var filteredItems = [];
+    angular.forEach( items, function( item ) {
+      if( !item.options.exposed ) {
+        filteredItems.push( item );
+      }
+    });
+    return filteredItems; 
+  }
+})
 .directive('ckEditor', function() {
   return {
     require: '?ngModel',

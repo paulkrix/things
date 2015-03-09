@@ -1,6 +1,8 @@
 <?php
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
+/*
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+*/
 class DataManager {
 
   const DB_USER = 'root';
@@ -132,13 +134,13 @@ class DataManager {
 
   public function getThings() {
 
-    $statement = $this->mysqli->prepare("SELECT id, name, exposed, prototype FROM thing");
+    $statement = $this->mysqli->prepare("SELECT id, name, options, prototype FROM thing");
     if(!$statement->execute()) {
       $this->response['status'] = 'error';
       $this->response['error'] = "MySQL query error: (" . $statement->errno . ") " . $statement->error;
       $this->respond();
     }
-    $statement->bind_result($id, $name, $exposed, $prototype);
+    $statement->bind_result($id, $name, $options, $prototype);
     $things = [];
     $statement->store_result();
   
@@ -147,7 +149,7 @@ class DataManager {
       $thing['id'] = $id;
       $thing['name'] = $name;
       $thing['prototype'] = $prototype;
-      $thing['exposed'] = ( $exposed == 0 ? false : true );
+      $thing['options'] = json_decode( $options );
       $thing['fields'] = [];
   
   
@@ -188,11 +190,11 @@ class DataManager {
     $statement = null;
   
     if($thing->id == NULL) {
-      $statement = $this->mysqli->prepare("INSERT INTO thing (name, exposed, prototype) VALUES (?,?,?)");
-      $statement->bind_param('sii', $thing->name, $thing->exposed, $thing->prototype);
+      $statement = $this->mysqli->prepare("INSERT INTO thing (name, options, prototype) VALUES (?,?,?)");
+      $statement->bind_param('ssi', $thing->name, json_encode( $thing->options ), $thing->prototype);
     } else {
-      $statement = $this->mysqli->prepare("UPDATE thing SET `name`=?, `exposed`=?, `prototype`=? WHERE `id`=?");
-      $statement->bind_param('siii', $thing->name, $thing->exposed, $thing->prototype, $thing->id);
+      $statement = $this->mysqli->prepare("UPDATE thing SET `name`=?, `options`=?, `prototype`=? WHERE `id`=?");
+      $statement->bind_param('ssii', $thing->name, json_encode( $thing->options ), $thing->prototype, $thing->id);
     }
     
     if(!$statement->execute()) {
