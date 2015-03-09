@@ -278,7 +278,8 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
     });
   }
 
-  $scope.save = PrototypeManager.save;
+  $scope.savePrototype = PrototypeManager.save;
+  $scope.saveThing = ThingManager.save;
 
 })
 

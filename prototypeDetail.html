@@ -46,7 +46,7 @@
                     Edit prototype
                   </div>
                   <div class="panel-body">
-            
+
                     <form name="myForm">
                       <div class="control-group form-group" ng-class="{error: myForm.name.$invalid && !myForm.name.$pristine}">
                         <label for="name">Name</label>
@@ -54,24 +54,29 @@
                         <span ng-show="myForm.name.$error.required && !myForm.name.$pristine" class="help-inline">
                             Required {{myForm.name.$pristine}}</span>
                       </div>
-            
+
                       <div class="control-group form-group">
                         <label for="singleton">Singleton</label>
                         <input type="checkbox" name="singleton" ng-model="prototype.options.singleton" />
                       </div>
-            
+
+                      <div class="control-group form-group">
+                        <label for="exposed">Exposed</label>
+                        <input type="checkbox" name="exposed" ng-model="prototype.options.exposed" />
+                      </div>
+
                       <div class="control-group form-group" ng-if="prototype.options.singleton">
                         <label for="sidebar">Sidebar</label>
                         <input type="checkbox" name="sidebar" ng-model="prototype.options.sidebar" />
                       </div>
-            
+
                       <button ng-click="save( prototype )" ng-disabled="myForm.$invalid"
                               class="btn btn-primary">Save</button>
                       <a href="#/" class="btn btn-default">Cancel</a>
                       <span class="pull-right">
                         <button ng-click="destroy( prototype )" class="btn btn-danger">Delete</button>
                       </span>
-            
+
                     </form>
                   </div>
                 </div>

@@ -36,6 +36,70 @@ class DataManager {
   }
 
 
+  public function createTables() {
+
+    $createFieldTable = "CREATE TABLE IF NOT EXISTS `field` (
+        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+        `thing` int(10) unsigned NOT NULL,
+        `name` varchar(255) NOT NULL,
+        `type` varchar(255) NOT NULL,
+        `value` text NOT NULL,
+        `array` tinyint(4) NOT NULL,
+        `options` text NOT NULL,
+        `helpText` text NOT NULL,
+        PRIMARY KEY (`id`)
+      ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;";
+
+    if ( !$this->mysqli->query( $createFieldTable ) ) {
+      die($this->mysqli->error);  
+    }
+
+    $createPrototypesTable = "CREATE TABLE IF NOT EXISTS `prototypes` (
+        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+        `name` varchar(255) NOT NULL,
+        `fields` text NOT NULL,
+        `options` text NOT NULL,
+        PRIMARY KEY (`id`)
+      ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;";
+
+    if ( !$this->mysqli->query( $createPrototypesTable ) ) {
+      die($this->mysqli->error);  
+    }
+
+    $createThingTable = "CREATE TABLE IF NOT EXISTS `thing` (
+        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+        `name` varchar(255) NOT NULL,
+        `options` text NOT NULL,
+        `prototype` int(10) unsigned NOT NULL,
+        PRIMARY KEY (`id`)
+      ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;";
+
+    if ( !$this->mysqli->query( $createThingTable ) ) {
+      die($this->mysqli->error);  
+    }
+
+    return 1;
+  }
+
+  public function truncateTables() {
+
+    $truncatePrototypesTable = "TRUNCATE TABLE prototypes;";
+    if ( !$this->mysqli->query( $truncatePrototypesTable ) ) {
+      die($this->mysqli->error);  
+    }
+    $truncateFieldTable = "TRUNCATE TABLE field;";
+    if ( !$this->mysqli->query( $truncateFieldTable ) ) {
+      die($this->mysqli->error);  
+    }
+    $truncateThingTable = "TRUNCATE TABLE thing;";
+    if ( !$this->mysqli->query( $truncateThingTable ) ) {
+      die($this->mysqli->error);  
+    }
+
+    return 1;
+
+  }
+
   /*******
    *  Load functions
    *******/

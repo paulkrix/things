@@ -14,7 +14,7 @@ function ThingManager($location, $upload, MCData) {
     var newThing = jQuery.extend({},prototype);
     newThing.prototype = newThing.id;
     newThing.id = null;
-    newThing.exposed = false;
+    newThing.options = {'exposed':false,'deleteable':false};
     for(var i = 0; i < newThing.fields.length; i++) {
       newThing.fields[i].thing = null;
       newThing.fields[i].value = null;
@@ -32,16 +32,18 @@ function ThingManager($location, $upload, MCData) {
       }
     });
   }
-  this.save = function( thing, returnPath ) {
+  this.save = function( thing, returnPath, reload ) {
     MCData.save(thing, "thing", function(data) {
       if(data.status === "error") {
         console.log(data.error);
         return;
       }
-      if( returnPath === undefined) {
-        $location.path("/");
-      } else {
-        $location.path( returnPath );
+      if( reload !== false ) {
+        if( returnPath === undefined || returnPath === null ) {
+          $location.path("/");
+        } else {
+          $location.path( returnPath );
+        }
       }
     });
   }

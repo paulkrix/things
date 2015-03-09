@@ -54,7 +54,7 @@
                         <span ng-if="prototype.options.singleton"> - <i>Singleton<span ng-if="prototype.options.singleton">, Sidebar</span></i></span>
 
                         <span class="pull-right">
-                          <span class="checkbox-wrapper"><label for="expose-{{prototype.id}}">Exposed</label><input id="expose-{{prototype.id}}" type="checkbox" ng-model="prototype.options.exposed" ng-change="save( prototype, false )" /></span>
+                          <span class="checkbox-wrapper"><label for="expose-{{prototype.id}}">Exposed</label><input id="expose-{{prototype.id}}" type="checkbox" ng-model="prototype.options.exposed" ng-change="savePrototype( prototype, false )" /></span>
                           <button ng-if="!prototype.alreadyCreated" ng-click="instantiate(prototype)" class="btn btn-default btn-xs">Create instance <span class="glyphicon glyphicon-plus"></span></button>
                         </span>
                       </div>
@@ -84,7 +84,10 @@
                     <div class="list-body">
                       <div class="list-group-item" ng-repeat="thing in things | filter:{ exposed: false }">
                         {{thing.name}} ({{thing.id}})
-                        <span class="pull-right"><a href="#/edit/thing/{{thing.id}}/">Edit <span class="glyphicon glyphicon-pencil"></span></a></span>
+                        <span class="pull-right">
+                          <span class="checkbox-wrapper"><label for="expose-{{thing.id}}">Exposed</label><input id="expose-{{thing.id}}" type="checkbox" ng-model="thing.options.exposed" ng-change="save( thing, null, false )" />
+                          <a href="#/edit/thing/{{thing.id}}/">Edit <span class="glyphicon glyphicon-pencil"></span></a>
+                        </span>
                       </div>
                     </div>
                   </div>
