@@ -1,16 +1,17 @@
 function PrototypeManager($location, MCData) {
 
   this.prototypes = [];
-  this.prototype = {
-    name: "",
-    id: null,
-    fields: [],
-    options: {}
-  }
+  this.prototype= {};
   this.otherPrototypes = [];
   var that = this;
 
   this.initialise = function( prototypes, prototypeId ) {
+    that.prototype = {
+      name: "",
+      id: null,
+      fields: [],
+      options: {}
+    }
     that.prototypes = prototypes;
     if( prototypeId !== undefined && prototypeId !== null ) {
       that.getCurrentPrototype( prototypeId );
@@ -52,6 +53,7 @@ function PrototypeManager($location, MCData) {
   }
 
   this.getField = function( fieldId ) {
+    console.log( fieldId );
     var fields = $.grep( that.prototype.fields, function(v,i) {
       return parseInt(v.id) === parseInt(fieldId);
     });

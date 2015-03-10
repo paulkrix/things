@@ -70,7 +70,7 @@ function ThingManager($location, $route, $upload, PrototypeManager, MCData) {
     var newThing = jQuery.extend({},prototype);
     newThing.prototype = newThing.id;
     newThing.id = null;
-    newThing.options = { exposed: prototype.options.exposed };
+    newThing.options = prototype.options;
     for(var i = 0; i < newThing.fields.length; i++) {
       newThing.fields[i].thing = null;
       newThing.fields[i].value = null;
@@ -80,16 +80,25 @@ function ThingManager($location, $route, $upload, PrototypeManager, MCData) {
   }
 
   this.save = function( thing, callback, returnPath ) {
+
+    if( thing === undefined || thing === null) {
+      if( that.thing === undefined || that.thing === null) {
+        return false;
+      }
+      thing = that.thing;
+    }
     MCData.save(thing, "thing", function(data) {
       if(data.status === "error") {
         console.log(data.error);
         return;
       }
-      thing.id = data.thingId;
+      if(data.thingId !== 0 ) {
+        thing.id = data.thingId;
+      }
       if( callback !== undefined && callback !== null ) {
         callback( thing, data );
       } else if( returnPath !== undefined && returnPath !== null ) {
-         $location.path( returnPath );
+         $location.url( returnPath );
       } else {
         $route.reload();
       }
@@ -126,7 +135,7 @@ function ThingManager($location, $route, $upload, PrototypeManager, MCData) {
       var file = $files[i];
       $('#loading-overlay').show();
       $scope.upload = $upload.upload({
-        url: 'upload.php',
+        url: '../upload.php',
         method: 'POST',
         data: {"id": field.id, "thing": $scope.thing.id},
         file: file,
@@ -145,7 +154,7 @@ function ThingManager($location, $route, $upload, PrototypeManager, MCData) {
           field.value = data;
         }
         $('#loading-overlay').hide();
-        MCData.save({things:$scope.things,prototypes:$scope.prototypes});
+        that.save( that.thing, function(){} );
       });
     }
   }

@@ -1,0 +1,183 @@
+      <!-- Navigation -->
+      <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html">Things admin backend</a>
+        </div>
+        <!-- /.navbar-header -->
+
+
+        <div class="navbar-default sidebar" role="navigation">
+          <div class="sidebar-nav navbar-collapse">
+            <ul class="nav" id="side-menu">
+              <li>
+                <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Things manager</a>
+              </li>
+              <li ng-repeat="sidebarThing in things | exposed | sidebar ">
+                <a ng-class="{active: thing.id==sidebarThing.id}" href="#/edit/{{sidebarThing.id}}"><i class="fa fa-dashboard fa-fw"></i> {{sidebarThing.name}}</a>
+              </li>
+            </ul>
+          </div>
+          <!-- /.sidebar-collapse -->
+        </div>
+        <!-- /.navbar-static-side -->
+      </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Thing editor</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  Edit thing
+                </div>
+                <div class="panel-body">
+                  <form name="myForm">
+
+                    <div class="control-group form-group" ng-class="{error: myForm.name.$invalid && !myForm.name.$pristine}">
+                      <label for="name">Name</label>
+                      <input type="text" name="name" class="form-control" ng-model="thing.name" required>
+                      <span ng-show="myForm.name.$error.required && !myForm.name.$pristine" class="help-inline">
+                          Required {{myForm.name.$pristine}}</span>
+                    </div>
+                    <hr />
+                    <div class="form-group control-group" ng-repeat="field in thing.fields">
+                      <label>{{field.name}} ({{field.id}})</label>
+                      <span ng-if="field.helpText" class="help-block">{{field.helpText}}</span>
+                      <div ng-switch="field.array">
+                        <div ng-switch-when="true">
+                         <div class="well">
+
+                            <div class="list-body">
+                              <p>Current items:</p>
+                              <div class="list-group-item" ng-repeat="item in field.value track by $index">
+                                <div ng-switch="field.type">
+
+                                  <div ng-switch-when="SHORT">
+                                    <input type="text" name="value" class="form-control" ng-model="item" />
+                                  </div>
+                                  <div ng-switch-when="TEXT">
+                                    <textarea ck-editor ng-model="item" name="value" class="form-control" rows="2"></textarea>
+                                  </div>
+                                  <div ng-switch-when="IMAGE">
+                                    <div class="well">
+                                      <img src="{{item}}" style="max-height:200px;" />
+                                      <p class="help-block">Upload new image</p> 
+                                      <input type="file" ng-file-select="onFileSelect($files, field)" name="value" />
+                                    </div>
+                                  </div>
+                                  <div ng-switch-when="FILE">
+                                    <input type="file" ng-model="item" name="value" />
+                                  </div>
+                                  <div ng-switch-when="THING">
+                                    <div ng-if="field.value !== null" ng-init="item = getThing( item )">
+                                      {{item.name}} <span class="pull-right"><a ng-click="removeItem(field, $index)" href="">Remove <span class="glyphicon glyphicon-minus"></span></a> <a href="{{ getEditPath(item.id) }}">Edit <span class="glyphicon glyphicon-pencil"></span></a></span>
+                                    </div>
+                                  </div>
+
+                                </div>
+<!--                                 <button ng-click="removeItem(field, $index)" class="btn btn-default">Remove image</button>  -->
+                              </div>
+                            </div>
+
+                            <div ng-switch="field.type">
+                              <br />
+                              <p>Add new array item<p>
+                              <div ng-switch-when="SHORT">
+                                <input type="text" name="value" class="form-control" ng-model="values.new.short" />
+                                <br />
+                                <button ng-click="addItem(field, values.new.short)" class="btn btn-default">Add item to {{field.name}}</button>
+                              </div>
+                              <div ng-switch-when="TEXT">
+                                <textarea ck-editor ng-model="values.new.text" name="value" class="form-control" rows="2"></textarea>
+                                <br />
+                                <button ng-click="addItem(field, values.new.text)" class="btn btn-default">Add item to {{field.name}}</button>
+                              </div>
+                              <div ng-switch-when="IMAGE">
+                                <button ng-click="addItem(field, null)" class="btn btn-default">Add image to {{field.name}}</button>
+                              </div>
+                              <div ng-switch-when="FILE">
+                                <input type="file" ng-model="values.new.file" name="value" />
+                                <br />
+                                <button ng-click="addItem(field, values.new.file)" class="btn btn-default">Add item to {{field.name}}</button>
+                              </div>
+                              <div ng-switch-when="THING" ng-init="setupThingField(field)">
+                                <div ng-show="field.thingFieldOptions.length > 0">
+                                  <select ng-model="values.new.thing" name="value" ng-init="values.new.thing = field.thingFieldOptions[0]" ng-options="itemThing.name for itemThing in field.thingFieldOptions track by itemThing.id"></select>
+                                  <button ng-click="addItem(field, values.new.thing)" class="btn btn-default">Add to {{field.name}}</button>
+                                </div>
+                                <br />
+                                <button ng-click="addItem(field, null)" class="btn btn-default">Create empty <i>{{field.prototype.name}}</i> for {{field.name}}</button>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                        <div ng-switch-when="false">
+                          <div ng-switch="field.type">
+                            <div ng-switch-when="SHORT">
+                              <input type="text" name="value" class="form-control" ng-model="field.value" />
+                            </div>
+                            <div ng-switch-when="TEXT">
+                              <textarea ck-editor ng-model="field.value" name="value" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div ng-switch-when="IMAGE">
+                              <div class="well">
+                                <img ng-if="field.value !== null" src="../{{field.value}}" class="img-responsive img-small" />
+                                <p class="help-block">Upload new image</p> 
+                                <input type="file" ng-file-select="onFileSelect($files, field)" name="value" />
+                              </div>
+                            </div>
+                            <div ng-switch-when="FILE">
+                              <input type="file" ng-model="field.value" name="value" />
+                            </div>
+                            <div ng-switch-when="THING" ng-init="setupThingField(field)">
+                              <div class="well">
+                                <div ng-if="field.value !== null" ng-init="itemThing = getThing( field.value.id )">
+                                  <div class="list-group-item">
+                                    {{itemThing.name}} <span class="pull-right"><a href="{{ getEditPath(itemThing.id) }}">Edit</a></span>
+                                  </div>
+                                </div>
+                                <br />
+                                <label for="thingValue">Select thing</label>
+                                  <select ng-model="field.value" name="value" ng-init="values.new = field.thingFieldOptions[0]" ng-options="itemThing.name for itemThing in field.thingFieldOptions track by itemThing.id"></select>
+                              </div>
+                            </div>
+                            <div ng-switch-when="MIRROR" ng-init="mirrorField = getMirrorDetails(field)">
+                              <p>This is a mirror field, it just copies what is in the '{{mirrorField.name}}' field from the {{mirrorField.thing.name}}</p>
+                            </div>
+                          </div>
+
+                        </div>
+
+                      </div>
+                      <hr />
+                   </div>
+
+                  </form>
+
+                  <button ng-click="save( thing, null, returnPath )" ng-disabled="myForm.$invalid"
+                          class="btn btn-primary">Save</button>
+                  <a href="#{{returnPath}}" class="btn btn-default">Cancel</a>
+                  <span class="pull-right">
+                    <button ng-click="destroy()" class="btn btn-danger">Delete</button>
+                  </span>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="loading-overlay"><img src="../img/loading.gif" id="loading" /></div>
