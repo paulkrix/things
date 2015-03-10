@@ -68,6 +68,7 @@
                          <div class="well">
 
                             <div class="list-body">
+                              <p>Current items:</p>
                               <div class="list-group-item" ng-repeat="item in field.value track by $index">
                                 <div ng-switch="field.type">
 
@@ -79,7 +80,7 @@
                                   </div>
                                   <div ng-switch-when="IMAGE">
                                     <div class="well">
-                                      <img src="../{{item}}" style="max-height:200px;" />
+                                      <img src="{{item}}" style="max-height:200px;" />
                                       <p class="help-block">Upload new image</p> 
                                       <input type="file" ng-file-select="onFileSelect($files, field)" name="value" />
                                     </div>
@@ -88,8 +89,8 @@
                                     <input type="file" ng-model="item" name="value" />
                                   </div>
                                   <div ng-switch-when="THING">
-                                    <div ng-if="field.value !== null" ng-init="item = getThing(item, things)">
-                                      {{item.name}} <span class="pull-right"><a ng-click="removeItem(field, item.id)" href="">Remove <span class="glyphicon glyphicon-minus"></span></a> <a href="{{ getEditPath(item.id) }}">Edit <span class="glyphicon glyphicon-pencil"></span></a></span>
+                                    <div ng-if="field.value !== null" ng-init="item = getThing( item )">
+                                      {{item.name}} <span class="pull-right"><a ng-click="removeItem(field, $index)" href="">Remove <span class="glyphicon glyphicon-minus"></span></a> <a href="{{ getEditPath(item.id) }}">Edit <span class="glyphicon glyphicon-pencil"></span></a></span>
                                     </div>
                                   </div>
 
@@ -99,32 +100,34 @@
                             </div>
 
                             <div ng-switch="field.type">
+                              <br />
+                              <p>Add new array item<p>
                               <div ng-switch-when="SHORT">
-                                <input type="text" name="value" class="form-control" ng-model="values.new" />
+                                <input type="text" name="value" class="form-control" ng-model="values.new.short" />
                                 <br />
-                                <button ng-click="addItem(field, values.new)" class="btn btn-default">Add item to {{field.name}}</button>
+                                <button ng-click="addItem(field, values.new.short)" class="btn btn-default">Add item to {{field.name}}</button>
                               </div>
                               <div ng-switch-when="TEXT">
-                                <textarea ck-editor ng-model="values.new" name="value" class="form-control" rows="2"></textarea>
+                                <textarea ck-editor ng-model="values.new.text" name="value" class="form-control" rows="2"></textarea>
                                 <br />
-                                <button ng-click="addItem(field, values.new)" class="btn btn-default">Add item to {{field.name}}</button>
+                                <button ng-click="addItem(field, values.new.text)" class="btn btn-default">Add item to {{field.name}}</button>
                               </div>
                               <div ng-switch-when="IMAGE">
-                                <button ng-click="addItem(field, values.new)" class="btn btn-default">Add image to {{field.name}}</button>
+                                <button ng-click="addItem(field, null)" class="btn btn-default">Add image to {{field.name}}</button>
 
                               </div>
                               <div ng-switch-when="FILE">
-                                <input type="file" ng-model="values.new" name="value" />
+                                <input type="file" ng-model="values.new.file" name="value" />
                                 <br />
-                                <button ng-click="addItem(field, values.new)" class="btn btn-default">Add item to {{field.name}}</button>
+                                <button ng-click="addItem(field, values.new.file)" class="btn btn-default">Add item to {{field.name}}</button>
                               </div>
                               <div ng-switch-when="THING" ng-init="setupThingField(field)">
                                 <div ng-show="field.thingFieldOptions.length > 0">
-                                  <select ng-model="values.new" name="value" ng-init="values.new = field.thingFieldOptions[0]" ng-options="itemThing.name for itemThing in field.thingFieldOptions track by itemThing.id"></select>
-                                  <button ng-click="addItem(field, values.new)" class="btn btn-default">Add to {{field.name}}</button>
+                                  <select ng-model="values.new.thing" name="value" ng-init="values.new.thing = field.thingFieldOptions[0]" ng-options="itemThing.name for itemThing in field.thingFieldOptions track by itemThing.id"></select>
+                                  <button ng-click="addItem(field, values.new.thing)" class="btn btn-default">Add to {{field.name}}</button>
                                 </div>
                                 <br />
-                                <button ng-click="addItem(field, values.new)" class="btn btn-default">Create empty <i>{{field.prototype.name}}</i> for {{field.name}}</button>
+                                <button ng-click="addItem(field, null)" class="btn btn-default">Create empty <i>{{field.prototype.name}}</i> for {{field.name}}</button>
                               </div>
                             </div>
                           </div>
@@ -150,7 +153,7 @@
                             </div>
                             <div ng-switch-when="THING" ng-init="setupThingField(field)">
                               <div class="well">
-                                <div ng-if="field.value !== null" ng-init="itemThing = getThing(field.value.id, things)">
+                                <div ng-if="field.value !== null" ng-init="itemThing = getThing( field.value.id )">
                                   <div class="list-group-item">
                                     {{itemThing.name}} <span class="pull-right"><a href="{{ getEditPath(itemThing.id) }}">Edit</a></span>
                                   </div>
@@ -185,6 +188,7 @@
                   </label>
                 </div>
                 <div ng-if="showDebug">
+                  <pre>{{ values | json }}</pre>
                   <pre>{{ things | json }}</pre>
                   <pre>{{ thing | json }}</pre>
                 </div>

@@ -1,13 +1,69 @@
-function ThingManager($location, $upload, MCData) {
+function ThingManager($location, $route, $upload, PrototypeManager, MCData) {
 
   this.things = [];
   this.thing = null;
+  this.otherThings = [];
+  var that = this;
 
-  this.getCurrentThing = function(thingId, things) {
-    var thingArray = $.grep(things, function(t,i) {
+  this.initialise = function( things, thingId ) {
+    that.things = things;
+    if( thingId !== undefined && thingId !== null ) {
+      that.getCurrentThing( thingId );
+    }
+  }
+
+  this.setupSingletons = function( prototypes ) {
+
+    for( var i = 0; i < prototypes.length; i++ ) {
+      var prototype = prototypes[i];
+      if( prototype.options.singleton === true ) {
+        for( var j = 0; j < that.things.length; j++ ) {
+          var thing = that.things[j];
+          if( thing.prototype === prototype.id ) {
+            prototype.alreadyCreated = true;
+            break;
+          }
+        }
+      }
+    }
+
+/*
+    for( var i = 0; i < that.things.length; i++ ) {
+      var thing = that.things[i];
+      thing.sidebar = false;
+    }
+*/
+  }
+ 
+  this.setupSidebar = function( prototypes ) {
+    for( var i = 0; i < prototypes.length; i++ ) {
+      var prototype = prototypes[i];
+      if( prototype.options.singleton === true && prototype.options.sidebar === true ) {
+        for( var j = 0; j < that.things.length; j++ ) {
+          var thing = that.things[j];
+          if( thing.prototype === prototype.id ) {
+            thing.sidebar = true;
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  this.getCurrentThing = function( thingId ) {
+    var thingArray = $.grep( that.things, function(t,i) {
       return parseInt(t.id) === parseInt(thingId);
     });
     this.thing = thingArray[0];
+  }
+
+  this.getOtherThings = function() {
+    for(var i = 0; i < that.things.length; i++) {
+      if(that.things[i].id !== that.thing.id) {
+        that.otherThings.push({"id":that.things[i].id,"name":that.things[i].name});
+      }
+    }
   }
 
   this.instantiatePrototype = function( prototype, callback ) {
@@ -20,32 +76,26 @@ function ThingManager($location, $upload, MCData) {
       newThing.fields[i].value = null;
       newThing.fields[i].id = null;
     }
-    MCData.save(newThing, "thing", function(data) {
-      if(data.status === "error") {
-        console.log(data.error);
-        return;
-      }
-      newThing.id = data.thingId;
-      if( callback !== undefined ) {
-        callback(newThing);
-      }
-    });
+    that.save( newThing, callback );
   }
-  this.save = function( thing, returnPath, reload ) {
+
+  this.save = function( thing, callback, returnPath ) {
     MCData.save(thing, "thing", function(data) {
       if(data.status === "error") {
         console.log(data.error);
         return;
       }
-      if( reload !== false ) {
-        if( returnPath === undefined || returnPath === null ) {
-          $location.path("/");
-        } else {
-          $location.path( returnPath );
-        }
+      thing.id = data.thingId;
+      if( callback !== undefined && callback !== null ) {
+        callback( thing, data );
+      } else if( returnPath !== undefined && returnPath !== null ) {
+         $location.path( returnPath );
+      } else {
+        $route.reload();
       }
     });
   }
+
   this.destroy = function( thing, returnPath ) {
     MCData.destroy(thing, 'thing', function(data) {
       if(data.status === "error") {
@@ -59,9 +109,9 @@ function ThingManager($location, $upload, MCData) {
       }    
     });
   }
-  
-  this.getThing = function(thingId, things) {
-    var thingArray = $.grep(things, function(v,i) {
+
+  this.getThing = function( thingId ) {
+    var thingArray = $.grep( that.things, function(v,i) {
       return parseInt(v.id) === parseInt(thingId);
     });
     
@@ -81,20 +131,16 @@ function ThingManager($location, $upload, MCData) {
         data: {"id": field.id, "thing": $scope.thing.id},
         file: file,
       }).progress(function(evt) {
-
       }).success(function(data, status, headers, config) {
-
         if(field.array) {
           if(field.value === null) {
             field.value = [];
           }
-
           if(index === undefined) {
             field.value[field.value.length-1] = data;
           } else {
             field.value[index] = data;
           }
-          
         } else {
           field.value = data;
         }
@@ -104,10 +150,10 @@ function ThingManager($location, $upload, MCData) {
     }
   }
 
-  this.getThingFieldOptions = function(things, thing, field) {
+  this.getThingFieldOptions = function( field ) {
     var otherFieldThings = [];
-    for(var i = 0; i < things.length; i++) {
-      var thing = things[i];
+    for(var i = 0; i < that.things.length; i++) {
+      var thing = that.things[i];
       if( parseInt(thing.prototype) !== parseInt(field.options.prototype.id) ){
         continue;
       }
@@ -117,7 +163,6 @@ function ThingManager($location, $upload, MCData) {
         continue;
       }
       for( var j = 0; j < field.value.length; j++ ) {
-
         if( parseInt(thing.id) === parseInt(field.value[j]) ) {
           alreadyInList = true;
           break;
@@ -129,5 +174,40 @@ function ThingManager($location, $upload, MCData) {
     }
     return otherFieldThings;
   };
+
+  this.removeFieldItem = function( field, index ) {
+    var value = field.value.splice(index, 1)[0];
+    if( field.type == "IMAGE" || field.type == "FILE" ) {
+      if( value !== null ) {
+        MCData.deleteFile( value );
+      }
+    }
+    MCData.save( that.thing, "thing");
+    $route.reload();
+  }
+
+  this.addFieldItem = function( field, newValue ) {
+    if( field.value === null ) {
+      field.value = [];
+    }
+    if( field.type === "THING" ) {
+      if( newValue === null || newValue === undefined ) {
+        var prototype = PrototypeManager.getPrototype( field.options.prototype.id );
+        that.instantiatePrototype( prototype, function( newThing ) {
+          that.things.push( newThing );
+          field.value.push( newThing.id );
+          MCData.save( that.thing, "thing" );
+        });
+      } else {
+        field.value.push( newValue.id );
+        MCData.save( that.thing, "thing" );
+        $route.reload();
+      }
+    } else {
+      field.value.push( newValue );
+      MCData.save( that.thing, "thing" );
+      $route.reload();
+    }
+  }
 
 }

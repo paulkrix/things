@@ -177,11 +177,11 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
 
 .controller('EditPrototype', function($scope, $http, $location, $routeParams, MCData, PrototypeManager) {
   MCData.getData('prototype').then(function(_data) {
+    //Get prototypes, setup PrototypeManager
     PrototypeManager.prototypes = _data.prototypes;
     $scope.prototypes = PrototypeManager.prototypes;
     PrototypeManager.getCurrentPrototype( $routeParams.prototypeId, $scope.prototypes );
     $scope.prototype = PrototypeManager.prototype;
-
   });
 
   $scope.save = PrototypeManager.save;
@@ -191,16 +191,11 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
 
 .controller('CreatePrototype', function($scope, $http, $location, MCData, PrototypeManager) {
   MCData.getData('prototype').then(function(_data) {
+    //Get prototypes, setup PrototypeManager
     PrototypeManager.prototypes = _data.prototypes;
     $scope.prototypes = PrototypeManager.prototypes;
+    $scope.prototype = PrototypeManager.prototype;
   });
-
-  $scope.prototype = {
-    name: "",
-    id: null,
-    fields: [],
-    options: {}
-  }
 
   $scope.save = PrototypeManager.save;
 
@@ -211,12 +206,13 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
 
     PrototypeManager.prototypes = _data.prototypes;
     $scope.prototypes = PrototypeManager.prototypes;
-    PrototypeManager.getCurrentPrototype( $routeParams.prototypeId, $scope.prototypes );
+    PrototypeManager.getCurrentPrototype( $routeParams.prototypeId );
     $scope.prototype = PrototypeManager.prototype;
 
-    $scope.field = PrototypeManager.getField( $scope.prototype, $routeParams.fieldId );
+    $scope.field = PrototypeManager.getField( $routeParams.fieldId );
+    PrototypeManager.getOtherPrototypes();
+    $scope.otherPrototypes = PrototypeManager.otherPrototypes;
 
-    $scope.otherPrototypes = PrototypeManager.getOtherPrototypes( $scope.prototype, $scope.prototypes );
   });
 
   $scope.saveField = PrototypeManager.saveField;
@@ -229,11 +225,11 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
 
     PrototypeManager.prototypes = _data.prototypes;
     $scope.prototypes = PrototypeManager.prototypes;
-    PrototypeManager.getCurrentPrototype( $routeParams.prototypeId, $scope.prototypes );
+    PrototypeManager.getCurrentPrototype( $routeParams.prototypeId );
     $scope.prototype = PrototypeManager.prototype;
 
-    $scope.otherPrototypes = PrototypeManager.getOtherPrototypes( $scope.prototype, $scope.prototypes );
-
+    PrototypeManager.getOtherPrototypes();
+    $scope.otherPrototypes = PrototypeManager.otherPrototypes;
     $scope.mirrorFields = [];
 
   });
@@ -256,50 +252,18 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
 
   MCData.getData().then(function(_data) {
 
-    ThingManager.things = _data.things;
+    ThingManager.initialise( _data.things );
     $scope.things = ThingManager.things;
 
     PrototypeManager.prototypes = _data.prototypes;
     $scope.prototypes = PrototypeManager.prototypes;
 
-    for( var i = 0; i < $scope.prototypes.length; i++ ) {
-      var prototype = $scope.prototypes[i];
-      if(prototype.options.singleton === true) {
-        for( var j = 0; j < $scope.things.length; j++ ) {
-          var thing = $scope.things[j];
-          if(thing.prototype === prototype.id) {
-            prototype.alreadyCreated = true;
-            break;
-          }
-        }
-      }
-    }
+    ThingManager.setupSingletons( $scope.prototypes );
+    ThingManager.setupSidebar( $scope.prototypes );
 
-    for( var i = 0; i < $scope.things.length; i++ ) {
-      var thing = $scope.things[i];
-      thing.sidebar = false;
-    }
-
-    for( var i = 0; i < $scope.prototypes.length; i++ ) {
-      var prototype = $scope.prototypes[i];
-      if(prototype.options.singleton === true && prototype.options.sidebar === true) {
-        for( var j = 0; j < $scope.things.length; j++ ) {
-          var thing = $scope.things[j];
-          if(thing.prototype === prototype.id) {
-            thing.sidebar = true;
-            break;
-          }
-        }
-      }
-    }
   });
-
-  $scope.instantiate = function( prototype ) {
-    ThingManager.instantiatePrototype( prototype, function() {
-      $route.reload();
-    });
-  }
-
+  
+  $scope.instantiate = ThingManager.instantiatePrototype;
   $scope.savePrototype = PrototypeManager.save;
   $scope.saveThing = ThingManager.save;
 
@@ -308,16 +272,13 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
 .controller('EditThing', function($scope, $http, $location, $upload, $route, $routeParams, MCData, PrototypeManager, ThingManager) {
   MCData.getData().then(function(_data) {
 
-    ThingManager.things = _data.things;
+    ThingManager.initialise( _data.things, $routeParams.thingId );
     $scope.things = ThingManager.things;
-    ThingManager.getCurrentThing($routeParams.thingId, $scope.things);
     $scope.thing = ThingManager.thing;
-    $scope.otherThings = [];
 
     $scope.returnPath = "/things";
 
     if( $routeParams.parents !== undefined ) {
-
       var parents = $routeParams.parents;
       var parentIds = parents.split(",");
       var parentId = parentIds.splice(parentIds.length-1, 1);
@@ -325,7 +286,6 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
       if( parentIds.length > 0) {
         $scope.returnPath += "?parents=" + parentIds.join(',');
       }
-
     }
 
     $scope.getEditPath = function( thingId ) {
@@ -335,57 +295,34 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
       return '#edit/thing/' + thingId + '?parents=' + $scope.thing.id;
     }
 
-    for(var i = 0; i < $scope.things.length; i++) {
-      if($scope.things[i].id !== $scope.thing.id) {
-        $scope.otherThings.push({"id":$scope.things[i].id,"name":$scope.things[i].name});
-      }
-    }
-    PrototypeManager.prototypes = _data.prototypes;
+    PrototypeManager.initialise( _data.prototypes );
     $scope.prototypes = PrototypeManager.prototypes;
-    for( var i = 0; i < $scope.prototypes.length; i++ ) {
-      var prototype = $scope.prototypes[i];
-      if(prototype.options.singleton === true && prototype.options.sidebar === true) {
-        for( var j = 0; j < $scope.things.length; j++ ) {
-          var thing = $scope.things[j];
-          if(thing.prototype === prototype.id) {
-            thing.sidebar = true;
-            break;
-          }
-        }
-      }
-    }
+    ThingManager.setupSidebar( $scope.prototypes );
+
   });
 
   $scope.values = {
-    "new":null
+    'new':{
+      'text':null
+    }
   };
 
   $scope.setupThingField = function(field) {
-    field.thingFieldOptions = ThingManager.getThingFieldOptions($scope.things, $scope.thing, field);
-    field.prototype = PrototypeManager.getPrototype(field.options.prototype.id, $scope.prototypes);
+    field.thingFieldOptions = ThingManager.getThingFieldOptions( field );
+    field.prototype = PrototypeManager.getPrototype( field.options.prototype.id );
   }
 
-  $scope.removeItem = function(field, index) {
 
-    var value = field.value.splice(index, 1)[0];
-    if( field.type == "IMAGE" || field.type == "FILE" ) {
-      if( value !== null ) {
-        MCData.deleteFile( value );
-      }
-    }
-    MCData.save($scope.thing, "thing");
-    $scope.getThingFieldOptions(field);
-    $route.reload();
+  $scope.removeItem = ThingManager.removeFieldItem;
 
-  }
-
+/*
   $scope.addItem = function(field, newValue) {
     if(field.value === null) {
       field.value = [];
     }
     if(field.type === "THING") {
       if(newValue === null || newValue === undefined) {
-        var prototype = PrototypeManager.getPrototype(field.options.prototype.id, $scope.prototypes);
+        var prototype = PrototypeManager.getPrototype( field.options.prototype.id );
         ThingManager.instantiatePrototype(prototype, function(newThing) {
           $scope.things.push( newThing );
           field.value.push(newThing.id);
@@ -402,9 +339,11 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
       MCData.save($scope.thing, "thing");
     }
   }
+*/
+  $scope.addItem = ThingManager.addFieldItem;
 
   $scope.getMirrorDetails = function(field) {
-    var thing = $scope.getThing(field.options.mirrorThing.id, $scope.things);
+    var thing = $scope.getThing(field.options.mirrorThing.id );
     var fields = $.grep(thing.fields, function(v,i) {
       return parseInt(v.id) === parseInt(field.options.mirrorField.id);
     });
@@ -420,7 +359,7 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
   $scope.getThing = ThingManager.getThing;
 
   $scope.save = function() {
-     ThingManager.save( $scope.thing, $scope.returnPath );
+     ThingManager.save( $scope.thing, null, $scope.returnPath );
   }
   $scope.destroy = function() {
      ThingManager.destroy( $scope.thing, $scope.returnPath );

@@ -71,7 +71,7 @@
                       <div class="list-group-item" ng-repeat="thing in things | exposed">
                         {{thing.name}} ({{thing.id}})
                         <span class="pull-right">
-                          <span class="checkbox-wrapper"><label for="expose-{{thing.id}}">Exposed</label><input id="expose-{{thing.id}}" type="checkbox" ng-model="thing.options.exposed" ng-change="saveThing( thing, '/things' )" />
+                          <span class="checkbox-wrapper"><label for="expose-{{thing.id}}">Exposed</label><input id="expose-{{thing.id}}" type="checkbox" ng-model="thing.options.exposed" ng-change="saveThing( thing, null, '/things' )" />
                           <a href="#/edit/thing/{{thing.id}}/">Edit <span class="glyphicon glyphicon-pencil"></span></a>
                         </span>
                       </div>
@@ -88,7 +88,7 @@
                       <div class="list-group-item" ng-repeat="thing in things | hidden">
                         {{thing.name}} ({{thing.id}})
                         <span class="pull-right">
-                          <span class="checkbox-wrapper"><label for="expose-{{thing.id}}">Exposed</label><input id="expose-{{thing.id}}" type="checkbox" ng-model="thing.options.exposed" ng-change="saveThing( thing, '/things' )" />
+                          <span class="checkbox-wrapper"><label for="expose-{{thing.id}}">Exposed</label><input id="expose-{{thing.id}}" type="checkbox" ng-model="thing.options.exposed" ng-change="saveThing( thing, null, '/things' )" />
                           <a href="#/edit/thing/{{thing.id}}/">Edit <span class="glyphicon glyphicon-pencil"></span></a>
                         </span>
                       </div>

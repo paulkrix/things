@@ -1,16 +1,29 @@
 function PrototypeManager($location, MCData) {
 
   this.prototypes = [];
-  this.prototype = null;
+  this.prototype = {
+    name: "",
+    id: null,
+    fields: [],
+    options: {}
+  }
+  this.otherPrototypes = [];
   var that = this;
 
-  this.getCurrentPrototype = function(prototypeId, prototypes) {
-    this.prototype = this.getPrototype( prototypeId, prototypes );
+  this.initialise = function( prototypes, prototypeId ) {
+    that.prototypes = prototypes;
+    if( prototypeId !== undefined && prototypeId !== null ) {
+      that.getCurrentPrototype( prototypeId );
+    }
   }
 
-  this.getPrototype = function( prototypeId, prototypes ) {
-    var prototypeArray = $.grep(prototypes, function(v,i) {
-      return parseInt(v.id) === parseInt(prototypeId);
+  this.getCurrentPrototype = function( prototypeId ) {
+    this.prototype = this.getPrototype( prototypeId );
+  }
+
+  this.getPrototype = function( prototypeId ) {
+    var prototypeArray = $.grep( that.prototypes, function(v,i) {
+      return parseInt(v.id) === parseInt( prototypeId );
     });
     return prototypeArray[0];
   }
@@ -38,21 +51,21 @@ function PrototypeManager($location, MCData) {
     });
   }
 
-  this.getField = function( prototype, fieldId ) {
-    var fields = $.grep( prototype.fields, function(v,i) {
+  this.getField = function( fieldId ) {
+    var fields = $.grep( that.prototype.fields, function(v,i) {
       return parseInt(v.id) === parseInt(fieldId);
     });
     return fields[0];
   }
 
-  this.getOtherPrototypes = function( prototype, prototypes ) {
+  this.getOtherPrototypes = function( ) {
     var otherPrototypes = [];
-    for( var i = 0 ; i < prototypes.length; i++ ) {
-      if( prototype.id !== prototypes[i].id ) {
-        otherPrototypes.push( { "name": prototypes[i].name, "id":prototypes[i].id } );
+    for( var i = 0 ; i < that.prototypes.length; i++ ) {
+      if( that.prototype.id !== that.prototypes[i].id ) {
+        otherPrototypes.push( { "name": that.prototypes[i].name, "id":that.prototypes[i].id } );
       }
     }
-    return otherPrototypes;
+    that.otherPrototypes = otherPrototypes;
   }
 
   this.saveField = function( field, prototype ) {
@@ -77,7 +90,6 @@ function PrototypeManager($location, MCData) {
   }
 
   this.destroyField = function( field, prototype ) {
-    console.log( field );
     for(var i = 0; i < prototype.fields.length; i++) {
       if( prototype.fields[i].id === field.id) {
          prototype.fields.splice(i, 1);
