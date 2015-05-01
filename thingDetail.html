@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="control-group form-group" ng-class="{error: myForm.exposed.$invalid && !myForm.exposed.$pristine}">
-                      <label for="type">Exposed</label>
+                      <label for="exposed">Exposed</label>
                       <input type="checkbox" name="exposed" ng-model="thing.exposed">
                     </div>
                     <hr />
@@ -65,6 +65,8 @@
                       <span ng-if="field.helpText" class="help-block">{{field.helpText}}</span>
                       <div ng-switch="field.array">
                         <div ng-switch-when="true">
+
+                        <!-- This is an array field -->
                          <div class="well">
 
                             <div class="list-body">
@@ -105,16 +107,15 @@
                               <div ng-switch-when="SHORT">
                                 <input type="text" name="value" class="form-control" ng-model="values.new.short" />
                                 <br />
-                                <button ng-click="addItem(field, values.new.short)" class="btn btn-default">Add item to {{field.name}}</button>
+                                <button ng-click="addItem(field, values.new.short)" class="btn btn-default">Add this text to {{field.name}}</button>
                               </div>
                               <div ng-switch-when="TEXT">
                                 <textarea ck-editor ng-model="values.new.text" name="value" class="form-control" rows="2"></textarea>
                                 <br />
-                                <button ng-click="addItem(field, values.new.text)" class="btn btn-default">Add item to {{field.name}}</button>
+                                <button ng-click="addItem(field, values.new.text)" class="btn btn-default">Add this text to {{field.name}}</button>
                               </div>
                               <div ng-switch-when="IMAGE">
                                 <button ng-click="addItem(field, null)" class="btn btn-default">Add image to {{field.name}}</button>
-
                               </div>
                               <div ng-switch-when="FILE">
                                 <input type="file" ng-model="values.new.file" name="value" />
@@ -134,6 +135,9 @@
 
                         </div>
                         <div ng-switch-when="false">
+
+                        <!-- This is a single field -->
+
                           <div ng-switch="field.type">
                             <div ng-switch-when="SHORT">
                               <input type="text" name="value" class="form-control" ng-model="field.value" />
@@ -141,6 +145,15 @@
                             <div ng-switch-when="TEXT">
                               <textarea ck-editor ng-model="field.value" name="value" class="form-control" rows="2"></textarea>
                             </div>
+                            <div ng-switch-when="BOOLEAN">
+                              <label for="value">True </label>
+                              <input type="checkbox" ng-model="field.value" name="value"/>
+                            </div>
+
+                            <div ng-switch-when="OPTION">
+                              <select ng-model="field.value" name="value" ng-options="option.value as option.label for option in field.options.options"></select>
+                            </div>
+
                             <div ng-switch-when="IMAGE">
                               <div class="well">
                                 <img ng-if="field.value !== null" src="{{field.value}}" style="max-height:200px;" />

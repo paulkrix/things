@@ -62,25 +62,35 @@
                         <option value="IMAGE">image</option>
                         <option value="FILE">file</option>
                         <option value="THING">thing</option>
+                        <option value="BOOLEAN">boolean</option>
+                        <option value="OPTION">option</option>
                         <option value="MIRROR">mirror field</option>
                       </select>
                     </div>
-                
+
+                    <div ng-if="field.type == 'OPTION'" class="control-group form-group">
+                      <label for="options">Options</label>
+                      <br/>
+                      <textarea ng-model="field.options.options" name="options" rows="6" class="form-control"></textarea>
+                      <span class="help-block">One option per line in this format "label":"yourLabel","value":"yourValue"</span>
+                    </div>
+
                     <div ng-if="field.type == 'THING'" class="control-group form-group">
                       <label for="prototype">Thing</label>
                       <select ng-model="field.options.prototype" name="prototype" ng-options="child.name for child in otherPrototypes track by child.id" required></select>
                     </div>
-          
+
                     <div class="control-group form-group">
                       <label for="name">Help text</label>
                       <input type="text" name="helpText" class="form-control" ng-model="field.helpText">
                     </div>
-          
-                    <div ng-if="field.type !== 'MIRROR'" class="control-group form-group" ng-class="{error: myForm.array.$invalid && !myForm.array.$pristine}">
+
+
+                    <div ng-if="field.type !== 'MIRROR' && field.type !== 'BOOLEAN' && field.type !== 'OPTION'" class="control-group form-group" ng-class="{error: myForm.array.$invalid && !myForm.array.$pristine}">
                       <label for="type">Array</label>
                       <input type="checkbox" name="array" ng-model="field.array">
                     </div>
-          
+
                     <button ng-click="saveField( field, prototype )" ng-disabled="myForm.$invalid"
                             class="btn btn-primary">Save</button>
                     <a href="#/" class="btn btn-default">Cancel</a>

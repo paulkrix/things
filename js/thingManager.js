@@ -75,6 +75,9 @@ function ThingManager($location, $route, $upload, PrototypeManager, MCData) {
       newThing.fields[i].thing = null;
       newThing.fields[i].value = null;
       newThing.fields[i].id = null;
+      if(newThing.fields[i].type === 'OPTION') {
+        newThing.fields[i].value = newThing.fields[i].options.options[0].value;
+      }
     }
     that.save( newThing, callback );
   }

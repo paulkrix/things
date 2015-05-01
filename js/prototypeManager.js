@@ -53,11 +53,25 @@ function PrototypeManager($location, MCData) {
   }
 
   this.getField = function( fieldId ) {
-    console.log( fieldId );
     var fields = $.grep( that.prototype.fields, function(v,i) {
       return parseInt(v.id) === parseInt(fieldId);
     });
-    return fields[0];
+    var field = fields[0];
+    if( field.type === "OPTION" ) {
+      var fieldOptions = angular.fromJson(field.options.options);
+      var fieldOptionsString = "";
+      for(var i = 0; i < fieldOptions.length; i++) {
+        var label = '"' + fieldOptions[i].label + '"';
+        var value = fieldOptions[i].value;
+        if(typeof value === 'string') {
+          value = '"' + value + '"';
+        }
+        console.log(typeof fieldOptions[i].value);
+        fieldOptionsString += '"label":' + label + ',"value":' + value + "\n";
+      }
+      field.options.options = fieldOptionsString.trim();
+    }
+    return field;
   }
 
   this.getOtherPrototypes = function( ) {
@@ -79,6 +93,11 @@ function PrototypeManager($location, MCData) {
 
     if( field.type === "THING" ) {
       delete field.options.prototype.name;
+    }
+
+    if( field.type === "OPTION" ) {
+      var fieldOptions = "[{" + field.options.options.replace(/\n/g, "},{") + "}]";
+      field.options.options = angular.fromJson(fieldOptions);
     }
 
     if( field.type === "MIRROR" ) {

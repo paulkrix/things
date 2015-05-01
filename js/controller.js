@@ -208,15 +208,10 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
     PrototypeManager.initialise( _data.prototypes, $routeParams.prototypeId );
     $scope.prototypes = PrototypeManager.prototypes;
     $scope.prototype = PrototypeManager.prototype;
-
-    console.log( PrototypeManager );
-
-
     $scope.field = PrototypeManager.getField( $routeParams.fieldId );
+
     PrototypeManager.getOtherPrototypes();
     $scope.otherPrototypes = PrototypeManager.otherPrototypes;
-
-    console.log( $scope );
 
   });
 
