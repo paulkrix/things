@@ -1,0 +1,144 @@
+body {
+  background: #c1e9f3;
+}
+
+.jumbotron {
+  text-align: center;
+  width: 30rem;
+  border-radius: 0.5rem;
+  top: 150px;
+  left: 0;
+  right: 0;
+  position: absolute;
+  margin: 4rem auto;
+  background-color: #fff;
+  padding: 2rem;
+  height: 280px;
+  box-shadow: 2px 2px 3px #eee;
+}
+
+.container .glyphicon-list-alt {
+  font-size: 10rem;
+  margin-top: 3rem;
+  color: #f96145;
+}
+
+input {
+  width: 100%;
+  margin-bottom: 1.4rem;
+  padding: 1rem;
+  background-color: #ecf2f4;
+  border-radius: 0.2rem;
+  border: none;
+}
+h1, h2 {
+  margin-top: 20px;
+  font-weight: normal;
+  color: #1d7383;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+h2 {
+  font-size: 26px;
+  line-height: 1.4em;
+  text-shadow: 1px 1px 2px #dddddd;
+}
+
+h1 {
+  font-size: 26px;
+  color: #f2621e;
+  background-color: #fff;
+}
+
+.btn {
+  border-radius: 0.2rem;
+}
+.btn .glyphicon {
+  font-size: 3rem;
+  color: #fff;
+}
+.full-width {
+  background-color: #b3d4fc;
+  width: 100%;
+  -webkit-border-top-right-radius: 0;
+  -webkit-border-bottom-right-radius: 0;
+  -moz-border-radius-topright: 0;
+  -moz-border-radius-bottomright: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.box {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin-bottom: 3rem;
+  margin-left: 3rem;
+  margin-right: 3rem;
+}
+
+
+header .wrapper.main-menu {
+  width: 100%;
+  height: 66px;
+  background-image: url(../../img/header/bg_banner_phone.jpg);
+  background-size: 100% 100%;
+  z-index: 90;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+}
+
+header .logo-holder {
+  width: 150px;
+  height: 64px;
+  background: url(../../img/header/human_brochure_logo_phone.png);
+  margin-left: 429px;
+  text-indent: -999px; 
+  overflow: hidden;
+/*   cursor: pointer; */
+  background-size: 100% 100%;
+  margin: 0 auto;
+}
+
+header .container {
+  margin: 0 auto;
+  position: relative;
+}
+
+.panel {
+  margin-top: 30px;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  header .logo-holder {
+    width: 231px;
+    height: 103px;
+    background: url(../../img/header/human_brochure_logo.png);
+    margin-left: 256px;
+    background-size: auto;
+  }
+  header .wrapper.main-menu {
+    height: 110px;
+    background: url(../../img/header/bg_banner.jpg) center center #ff9000;
+  }
+  h1 {
+    font-size: 32px;
+    color: #f2621e;
+    background-color: #fff;
+  }
+  .panel {
+    padding: 15px 20px;
+  }
+}
+@media (min-width: 992px) {
+  header .logo-holder {
+    margin-left: 370px;
+  }
+}
+@media (min-width: 1200px) {
+  header .logo-holder {
+    margin-left: 470px;
+  }
+}

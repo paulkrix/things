@@ -22,7 +22,7 @@ if ($_SESSION['login'] == true || $_POST['password'] == "admin") {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Things prototype creator</title>
+    <title>Things client backend</title>
     
     <link href="../css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="../css/sb-admin-2.css" rel="stylesheet">

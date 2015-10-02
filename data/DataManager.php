@@ -8,7 +8,7 @@ class DataManager {
   const DB_USER = 'root';
   const DB_PASSWORD = 'root';
   const DB_HOST = 'localhost';
-  const DB_NAME = 'things';  
+  const DB_NAME = 'resume';  
 
   protected $mysqli;
   protected $response;
@@ -126,6 +126,7 @@ class DataManager {
       $prototypes[] = $prototype;
     }
     $this->response['prototypes'] = $prototypes;
+    return $prototypes;
   }
 
 /***
@@ -180,6 +181,7 @@ class DataManager {
     }
   
     $this->response['things'] = $things;
+    return $things;
   }
 
   /**********
@@ -315,6 +317,17 @@ class DataManager {
       $this->response['error'] = "MySQL query error: (" . $statement->errno . ") " . $statement->error;
       $this->respond();
     }
+  }
+
+  /*
+   * Returns an object of the field data from a thing
+   */
+  public function thingToObject( $thing ) {
+    $object = new stdClass();
+    foreach( $thing["fields"] as $field ) {
+      $object->{$field['name']} = $field['value'];
+    }
+    return $object;
   }
 
 }

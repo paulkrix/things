@@ -257,6 +257,9 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
     PrototypeManager.initialise(_data.prototypes);
     $scope.prototypes = PrototypeManager.prototypes;
 
+    $scope.sortedThings = ThingManager.sortByPrototype( $scope.things );
+    console.log( $scope.sortedThings );
+
     ThingManager.setupSingletons( $scope.prototypes );
     ThingManager.setupSidebar( $scope.prototypes );
 
@@ -310,6 +313,19 @@ angular.module('things', ['ngRoute', 'angularFileUpload', 'ui.bootstrap'])
     field.thingFieldOptions = ThingManager.getThingFieldOptions( field );
     field.prototype = PrototypeManager.getPrototype( field.options.prototype.id );
   }
+
+
+  $scope.optionFieldToArray = function(field) {
+    var optionsObj = field.options.options[0];
+       console.log(optionsObj);
+    var options = [];
+    for (var key in optionsObj) {
+      if (optionsObj.hasOwnProperty(key)) {
+        options.push( { "name":key, "value" : optionsObj[key] } );
+      }
+    }
+    return options;
+  };
 
 
   $scope.removeItem = ThingManager.removeFieldItem;

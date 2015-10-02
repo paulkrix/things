@@ -62,28 +62,46 @@
                   </div>
                 </div>
                 <h2>Edit things</h2>
-                <div class="panel panel-default">
+                <h3>Exposed things</h3>
+
+                <div class="panel panel-default" ng-repeat="sortedThingsEntry in sortedThings">
                   <div class="panel-heading">
-                    Exposed things
+                    {{ sortedThingsEntry.prototype.name }}
                   </div>
                   <div class="panel-body">
                     <div class="list-body">
-                      <div class="list-group-item" ng-repeat="thing in things | exposed">
+                      <div class="list-group-item" ng-repeat="thing in sortedThingsEntry.things | exposed">
                         {{thing.name}} ({{thing.id}})
                         <span class="pull-right">
                           <span class="checkbox-wrapper"><label for="expose-{{thing.id}}">Exposed</label><input id="expose-{{thing.id}}" type="checkbox" ng-model="thing.options.exposed" ng-change="saveThing( thing, null, '/things' )" />
-                          <a href="#/edit/thing/{{thing.id}}/">Edit <span class="glyphicon glyphicon-pencil"></span></a>
+                            <a href="#/edit/thing/{{thing.id}}/">Edit <span class="glyphicon glyphicon-pencil"></span></a>
+                          </span>
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
-            
-                <div class="panel panel-default">
+
+                <h3>Hidden things</h3>
+
+                <div class="panel panel-default" ng-repeat="sortedThingsEntry in sortedThings">
                   <div class="panel-heading">
-                    Hidden things
+                    {{ sortedThingsEntry.prototype.name }}
                   </div>
                   <div class="panel-body">
+                    <div class="list-body">
+                      <div class="list-group-item" ng-repeat="thing in sortedThingsEntry.things | hidden">
+                        {{thing.name}} ({{thing.id}})
+                        <span class="pull-right">
+                          <span class="checkbox-wrapper"><label for="expose-{{thing.id}}">Exposed</label><input id="expose-{{thing.id}}" type="checkbox" ng-model="thing.options.exposed" ng-change="saveThing( thing, null, '/things' )" />
+                            <a href="#/edit/thing/{{thing.id}}/">Edit <span class="glyphicon glyphicon-pencil"></span></a>
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+<!--
                     <div class="list-body">
                       <div class="list-group-item" ng-repeat="thing in things | hidden">
                         {{thing.name}} ({{thing.id}})
@@ -93,6 +111,7 @@
                         </span>
                       </div>
                     </div>
+-->
                   </div>
                 </div>
                 <div class="checkbox">
@@ -101,7 +120,9 @@
                   </label>
                 </div>
                 <div ng-if="showDebug">
+                  <p>Things</p>
                   <pre>{{ things | json }}</pre>
+                  <p>Prototypes</p>
                   <pre>{{ prototypes | json }}</pre>
                 </div>
               </div>

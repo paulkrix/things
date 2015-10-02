@@ -57,7 +57,7 @@
 
                     <div class="control-group form-group" ng-class="{error: myForm.exposed.$invalid && !myForm.exposed.$pristine}">
                       <label for="exposed">Exposed</label>
-                      <input type="checkbox" name="exposed" ng-model="thing.exposed">
+                      <input type="checkbox" name="exposed" ng-model="thing.options.exposed">
                     </div>
                     <hr />
                     <div class="form-group control-group" ng-repeat="field in thing.fields">
@@ -151,7 +151,7 @@
                             </div>
 
                             <div ng-switch-when="OPTION">
-                              <select ng-model="field.value" name="value" ng-options="option.value as option.label for option in field.options.options"></select>
+                                <select ng-model="field.value" name="value" ng-options="option.label for option in field.options.options track by option.value"></select>
                             </div>
 
                             <div ng-switch-when="IMAGE">
@@ -201,8 +201,11 @@
                   </label>
                 </div>
                 <div ng-if="showDebug">
+                  <p>Values</p>
                   <pre>{{ values | json }}</pre>
+                  <p>Things</p>
                   <pre>{{ things | json }}</pre>
+                  <p>Thing</p>
                   <pre>{{ thing | json }}</pre>
                 </div>
                 </div>
