@@ -5,10 +5,10 @@ ini_set('display_errors', 1);
 */
 class DataManager {
 
-  const DB_USER = 'root';
-  const DB_PASSWORD = 'root';
-  const DB_HOST = 'localhost';
-  const DB_NAME = 'resume';  
+  const DB_USER = '';
+  const DB_PASSWORD = '';
+  const DB_HOST = '';
+  const DB_NAME = '';  
 
   protected $mysqli;
   protected $response;
